@@ -40,6 +40,7 @@
 '''
 
 import time
+import os
 
 FILEPATH = './savedata.txt'
 
@@ -52,6 +53,11 @@ def save(player_exp: int):
 
 def load():
     # プレイヤーの経験値をロードします
+    # ファイルが無かったら新しく作ります。
+    if not os.path.exists(FILEPATH):
+        with open(FILEPATH, mode='w') as f:
+            f.write(str(0))
+
     with open(FILEPATH, mode='r') as f:
         data = int(f.read())
     return data
