@@ -39,38 +39,58 @@
 
 '''
 
+import datetime
 import time
 import os
 
 FILEPATH = './savedata.txt'
+INTARBAL_GET_EXP = 1  # 秒
 
 
 def save(player_exp: int):
-    # プレイヤーの経験値を保存します
+    # プレイヤーの経験値と現在の時間を保存します
     with open(FILEPATH, mode='w') as f:
-        f.write(str(player_exp))
-        print('player exp saved')
+        f.write('{},{}'.format(str(player_exp), datetime.datetime.now()))
+        print('プレイヤーのデータをセーブしました')
 
 
-def load():
-    # プレイヤーの経験値をロードします
+def load() -> list:
+    # プレイヤーの経験値とセーブした時間をロードします
     # ファイルが無かったら新しく作ります。
+
     if not os.path.exists(FILEPATH):
-        with open(FILEPATH, mode='w') as f:
-            f.write(str(0))
+        print('新規でプレイヤーのデータを作成しました')
+        save(0)
 
     with open(FILEPATH, mode='r') as f:
-        data = int(f.read())
+        data = f.read().split(',')
+        data[0] = int(data[0])
+        data[1] = datetime.datetime.strptime(data[1], '%Y-%m-%d %H:%M:%S.%f')
+        print('プレイヤーのデータをロードしました')
+
+    assert type(data[0]) == int
+    assert type(data[1]) == datetime.datetime
+
     return data
 
 
+def update_exp_for_startup(exp: int, time) -> int:
+    # 経過時間から現在の経験値を算出します。
+    # exp += (time - 現在時刻) // INTARBAL_GET_EXP * 取得経験値
+    dt_now = datetime.datetime.now()
+    exp_during_inactive_periods = (dt_now - time).seconds // INTARBAL_GET_EXP * 1  # 1は後で変更する予定
+    print('ログアウト期間中に{}の経験値を獲得'.format(exp_during_inactive_periods))
+    return exp + exp_during_inactive_periods
+
+
 if __name__ == "__main__":
-    player_exp = load()
-    intarbal_get_exp = 1  # 秒
+    player_data = load()
+    player_exp = update_exp_for_startup(player_data[0], player_data[1])
+
     try:
         while(True):
             player_exp += 1
             print('player exp is {}'.format(player_exp))
-            time.sleep(intarbal_get_exp)
+            time.sleep(INTARBAL_GET_EXP)
     finally:
         save(player_exp)
