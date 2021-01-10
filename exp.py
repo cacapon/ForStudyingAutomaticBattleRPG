@@ -41,11 +41,29 @@
 
 import time
 
+FILEPATH = './savedata.txt'
+
+
+def save(player_exp: int):
+    # プレイヤーの経験値を保存します
+    with open(FILEPATH, mode='w') as f:
+        f.write(str(player_exp))
+
+
+def load():
+    # プレイヤーの経験値をロードします
+    with open(FILEPATH, mode='r') as f:
+        data = int(f.read())
+    return data
+
 
 if __name__ == "__main__":
-    player_exp = 0
+    player_exp = load()
     intarbal_get_exp = 1  # 秒
-    while(True):
-        player_exp += 1
-        print('player exp is {}'.format(player_exp))
-        time.sleep(intarbal_get_exp)
+    try:
+        while(True):
+            player_exp += 1
+            print('player exp is {}'.format(player_exp))
+            time.sleep(intarbal_get_exp)
+    finally:
+        save(player_exp)
