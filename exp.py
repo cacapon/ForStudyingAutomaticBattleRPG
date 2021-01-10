@@ -49,6 +49,7 @@ def save(player_exp: int):
     # プレイヤーの経験値を保存します
     with open(FILEPATH, mode='w') as f:
         f.write(str(player_exp))
+        print('player exp saved')
 
 
 def load():
