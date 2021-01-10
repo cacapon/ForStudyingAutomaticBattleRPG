@@ -1,0 +1,2 @@
+# ForStudyingAutomaticBattleRPG
+自動戦闘RPGの学習用リポジトリになります。
